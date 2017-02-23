@@ -58,7 +58,7 @@ class SmscAdapter implements AdapterInterface
         try {
             $responseData = Json::decode($result, Json::TYPE_ARRAY);
         } catch (\Exception $e) {
-            throw new Exception\RuntimeException('Unable decode response: ' . $result);
+            throw new Exception\AdapterException('Unable decode response: ' . $result);
         }
 
         // Проверяем ошибки принятия смс
@@ -70,7 +70,7 @@ class SmscAdapter implements AdapterInterface
             }
 
             $description = $responseData['error'];
-            throw new Exception\RuntimeException($reason . ': ' . $description);
+            throw new Exception\AdapterException($reason . ': ' . $description);
         }
     }
 

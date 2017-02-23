@@ -1,5 +1,5 @@
 <?php
-namespace ZfSms\Controller;
+namespace ZfSms\Command;
 
 use ZfSms\Service\Exception\ServiceException;
 use ZfSms\Service\SmsService;

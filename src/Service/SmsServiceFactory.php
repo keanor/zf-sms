@@ -34,7 +34,7 @@ class SmsServiceFactory implements FactoryInterface
     {
         $service = new SmsService();
 
-        $moduleOptions = $serviceLocator->get('moduleOptions_sms');
+        $moduleOptions = $serviceLocator->get(z);
         if (!$moduleOptions instanceof ModuleOptions) {
             throw new InvalidArgumentException('Unable create module options for sms module');
         }
@@ -100,6 +100,9 @@ class SmsServiceFactory implements FactoryInterface
      */
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
-        return $this->createService($container);
+        $moduleOptions = $container->get(ModuleOptions::class);
+        $adapter = $container->get(AdapterInterface::class);
+
+        return new SmsService($moduleOptions, $adapter);
     }
 }

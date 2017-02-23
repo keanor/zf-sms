@@ -41,7 +41,7 @@ class Sms48Adapter implements AdapterInterface
     {
         $phone = preg_replace('/^\+/', '', $phone);
         if (!preg_match('/^[0-9]{11}$/', $phone)) {
-            throw new Exception\InvalidArgumentException('Incorrect phone number: ' . $phone);
+            throw new Exception\AdapterException('Incorrect phone number: ' . $phone);
         }
 
         $phone = iconv('UTF-8', 'cp1251', $phone);

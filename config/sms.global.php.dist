@@ -1,0 +1,12 @@
+<?php
+return [
+    'zf_sms' => [
+        'adapter' => [
+            'type' => \ZfSms\Adapter\SmscAdapter::class,
+            'options' => [
+                'login' => 'smsclogin',
+                'password' => 'smscpassword',
+            ],
+        ],
+    ],
+];

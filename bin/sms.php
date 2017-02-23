@@ -52,5 +52,5 @@ if (is_readable('init_autoloader.php')) {
 $application = Application::init(include 'config/application.config.php');
 
 $symfony = new \Symfony\Component\Console\Application('sms');
-$symfony->add(new \ZfSms\Controller\SmsCommand($application->getServiceManager()->get('SmsService')));
+$symfony->add(new \ZfSms\Command\SmsCommand($application->getServiceManager()->get('SmsService')));
 $symfony->run();

@@ -7,8 +7,11 @@
  */
 namespace ZfSms\Service;
 
+use Doctrine\ORM\EntityManager;
+use ZfSms\Adapter\AdapterInterface;
 use ZfSms\Adapter\Exception\AdapterException;
 use ZfSms\Entity\Sms;
+use ZfSms\ModuleOptions;
 
 /**
  * Сервис отправки СМС
@@ -27,9 +30,18 @@ class SmsService
     protected $adapter;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * SmsService constructor.
+     *
+     * @param ModuleOptions $options
+     * @param AdapterInterface $adapter
      */
-    protected $entityManager;
+    public function __construct(
+        ModuleOptions $options,
+        AdapterInterface $adapter
+    ) {
+        $this->options = $options;
+        $this->adapter = $adapter;
+    }
 
     /**
      * Отправить СМС
@@ -39,62 +51,15 @@ class SmsService
      */
     public function send($phone, $message)
     {
-
-        $sms = $this->createJournalEntry($phone, $message);
         try {
             $this->getAdapter()->send($phone, $message);
-            $this->sendSuccess($sms);
         } catch (AdapterException $e) {
-            $this->sendError($sms, $e);
-
             throw new Exception\ServiceException(sprintf(
                 'Не удалось отправить sms на номер %s с текстом "%s"',
                 $phone,
                 $message
             ), $e->getCode(), $e);
         }
-    }
-
-    /**
-     * Создаем запись в журнале
-     *
-     * @param string $phone
-     * @param string $message
-     *
-     * @return Sms
-     */
-    protected function createJournalEntry($phone, $message)
-    {
-        $entity = new Sms();
-        $entity->setPhone($phone);
-        $entity->setMessage($message);
-
-        return $entity;
-    }
-
-    /**
-     * Помечаем запись в журнале как успешную, или удаляем
-     *
-     * @param Sms $entry
-     */
-    protected function sendSuccess(Sms $entry)
-    {
-        if ($this->getOptions()->isLogSuccess()) {
-            $entry->setStatus(Sms::STATUS_SUCCESS);
-        }
-    }
-
-    /**
-     * Помечаем запись в журнале как ошибочную
-     *
-     * @param Sms $entry
-     * @param \Exception $e
-     */
-    protected function sendError(Sms $entry, \Exception $e)
-    {
-        $sms = $entry;
-        $sms->setStatus(Sms::STATUS_ERROR);
-        $sms->setAdditional($e->__toString());
     }
 
     /**
@@ -127,21 +92,5 @@ class SmsService
     public function setOptions($options)
     {
         $this->options = $options;
-    }
-
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    public function getEntityManager()
-    {
-        return $this->entityManager;
-    }
-
-    /**
-     * @param \Doctrine\ORM\EntityManager $entityManager
-     */
-    public function setEntityManager($entityManager)
-    {
-        $this->entityManager = $entityManager;
     }
 }
